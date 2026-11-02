@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Philosophy of Logic</title>
+    <link rel="stylesheet" href="AIstyle.css">
+</head>
+
+<body>
+
+    <div class="quiz-container">
+
+        <h2>Philosophy of Logic</h2>
+
+        <p class="instructions">
+            Drag each concept into the correct category. Your score updates automatically.
+        </p>
+
+        <div class="board">
+
+            <div class="column">
+                <h3>Concepts</h3>
+                <div id="concepts" class="concepts-container"></div>
+            </div>
+
+            <div class="column">
+                <h3>Deductive Reasoning</h3>
+                <div class="dropzone" data-category="deductive"></div>
+            </div>
+
+            <div class="column">
+                <h3>Inductive Reasoning</h3>
+                <div class="dropzone" data-category="inductive"></div>
+            </div>
+
+            <div class="column">
+                <h3>Logical Fallacies</h3>
+                <div class="dropzone" data-category="fallacies"></div>
+            </div>
+
+        </div>
+
+        <div class="button-container">
+            <button id="resetQuiz">Reset Quiz</button>
+        </div>
+
+        <div id="results">
+            <strong>Score: 0 / 15</strong>
+        </div>
+
+    </div>
+
+    <script>
+
+        const concepts = [
+            { text: "Affirming the Consequent", category: "fallacies" },
+            { text: "Validity", category: "deductive" },
+            { text: "Cogency", category: "inductive" },
+            { text: "Soundness", category: "deductive" },
+            { text: "Modus Ponens", category: "deductive" },
+            { text: "Syllogism", category: "deductive" },
+            { text: "Ad Hominem", category: "fallacies" },
+            { text: "Generalization", category: "inductive" },
+            { text: "Statistical Inference", category: "inductive" },
+            { text: "Straw Man", category: "fallacies" },
+            { text: "Extrapolation", category: "inductive" },
+            { text: "Slippery Slope", category: "fallacies" },
+            { text: "Bandwagon", category: "fallacies" },
+            { text: "Contraposition", category: "deductive" },
+            { text: "Analogy", category: "inductive" }
+        ];
+
+        const conceptsContainer = document.getElementById("concepts");
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function updateScore() {
+
+            let score = 0;
+
+            document.querySelectorAll(".draggable").forEach(item => {
+
+                item.classList.remove("correct", "incorrect");
+
+                const parent = item.parentElement;
+
+                if (parent.classList.contains("dropzone")) {
+
+                    const chosenCategory = parent.dataset.category;
+                    const correctCategory = item.dataset.category;
+
+                    if (chosenCategory === correctCategory) {
+                        item.classList.add("correct");
+                        score++;
+                    } else {
+                        item.classList.add("incorrect");
+                    }
+                }
+            });
+
+            document.getElementById("results").innerHTML =
+                `<strong>Score: ${score} / 15</strong>`;
+        }
+
+        shuffle(concepts);
+
+        concepts.forEach((item, index) => {
+
+            const concept = document.createElement("div");
+
+            concept.classList.add("draggable");
+            concept.id = "item-" + index;
+            concept.draggable = true;
+            concept.textContent = item.text;
+            concept.dataset.category = item.category;
+
+            conceptsContainer.appendChild(concept);
+
+        });
+
+        document.addEventListener("dragstart", (e) => {
+
+            if (e.target.classList.contains("draggable")) {
+                e.dataTransfer.setData("text", e.target.id);
+            }
+
+        });
+
+        document.querySelectorAll(".dropzone, .concepts-container")
+            .forEach(zone => {
+
+                zone.addEventListener("dragover", (e) => {
+                    e.preventDefault();
+                });
+
+                zone.addEventListener("drop", (e) => {
+
+                    e.preventDefault();
+
+                    const id = e.dataTransfer.getData("text");
+                    const draggedItem = document.getElementById(id);
+
+                    e.currentTarget.appendChild(draggedItem);
+
+                    updateScore();
+
+                });
+
+            });
+
+        document.getElementById("resetQuiz")
+            .addEventListener("click", () => {
+                location.reload();
+            });
+
+    </script>
+
+</body>
+</html>
